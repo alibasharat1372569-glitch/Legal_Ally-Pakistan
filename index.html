@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Ally Pakistan</title>
+    <style>
+        /* Modern Dark & Gold Theme */
+        :root {
+            --bg-color: #121212;
+            --chat-bg: #1e1e1e;
+            --gold: #d4af37;
+            --gold-hover: #b5952f;
+            --text-light: #e0e0e0;
+            --user-msg: #2a2a2a;
+            --bot-msg: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling based on your Image */
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #000;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .motto {
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            opacity: 0.8;
+        }
+
+        .motto-line {
+            width: 50px;
+            height: 1px;
+            background-color: var(--gold);
+        }
+
+        .scales-icon {
+            font-size: 2rem;
+            color: var(--gold);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin: 10px 0 0 0;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            max-width: 80%;
+            line-height: 1.6;
+        }
+
+        .user-message {
+            background-color: var(--user-msg);
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+            border: 1px solid #333;
+        }
+
+        .bot-message {
+            background-color: var(--bot-msg);
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+            border-left: 3px solid var(--gold);
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            background-color: var(--chat-bg);
+            display: flex;
+            gap: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            border-top: 1px solid #333;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: white;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--gold);
+            color: #000;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--gold-hover);
+        }
+
+        /* Settings Modal for SaaS API setup */
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 8px 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--chat-bg);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid var(--gold);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        select, .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #555;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <button class="settings-btn" onclick="openSettings()">⚙️ API Settings</button>
+        <div class="motto">
+            <div class="motto-line"></div>
+            <span>BE THE VOICE</span>
+            <span class="scales-icon">⚖️</span>
+            <span>OF THE VOICELESS</span>
+            <div class="motto-line"></div>
+        </div>
+        <h1 class="title">Legal Ally Pakistan</h1>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="message bot-message">
+            Assalam o Alaikum! Main <strong>Legal Ally Pakistan</strong> hoon. Main yahan aam awam aur law students ki rehnumai ke liye majood hoon. Aap mujhse Pakistan ke Qawaneen (Laws), Fiqh, ya International Law ke hawale se koi bhi sawal pooch sakte hain. Main koshish karunga ke asaan aur sunhare alfaaz mein aapki mukammal rehnumai karun. Batiye, aaj main aapki kya madad kar sakta hoon?
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Apna sawal yahan likhein... (Enter dabayen)" onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Bhejein</button>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); margin-top: 0;">SaaS API Setup</h2>
+            <p style="font-size: 0.9rem; color: #aaa;">Har user apni API key khud dalega. Data browser mein mehfooz rahega.</p>
+            
+            <label>Provider Select Karein:</label>
+            <select id="apiProvider">
+                <option value="groq">Groq Console (Recommended)</option>
+                <option value="openrouter">OpenRouter</option>
+            </select>
+
+            <label>Apni API Key Darj Karein:</label>
+            <input type="password" id="apiKeyInput" placeholder="sk-...">
+
+            <button onclick="saveSettings()" style="width: 100%;">Save Key & Start</button>
+        </div>
+    </div>
+
+    <script>
+        // System Prompt: Yeh AI ka dimag hai jo isko Legal expert banata hai
+        const systemPrompt = `You are 'Legal Ally Pakistan', an advanced, highly knowledgeable AI legal assistant. 
+        Your motto is 'Be the voice of the voiceless'. 
+        Your expertise includes:
+        1. Pakistani Law (Constitution, Penal Code PPC, Civil Procedure, etc.)
+        2. Islamic Fiqh and Jurisprudence.
+        3. International Laws.
+        
+        Guidelines:
+        - Answer in clear, elegant, and easy-to-understand Urdu/Roman Urdu or English (depending on the user's language). 
+        - Use 'sunhare alfaaz' (polite, empathetic, and professional language).
+        - Break down complex legal jargon so common people and students can easily understand.
+        - Always clarify that you are providing legal information for educational purposes, not formal legal counsel.`;
+
+        // Load Settings on Start
+        window.onload = () => {
+            const savedKey = localStorage.getItem('legalAllyApiKey');
+            if (!savedKey) {
+                openSettings(); // Agar key nahi hai to pehle settings kholo
+            }
+        };
+
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+            document.getElementById('apiKeyInput').value = localStorage.getItem('legalAllyApiKey') || '';
+            document.getElementById('apiProvider').value = localStorage.getItem('legalAllyProvider') || 'groq';
+        }
+
+        function saveSettings() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            const provider = document.getElementById('apiProvider').value;
+            if (key) {
+                localStorage.setItem('legalAllyApiKey', key);
+                localStorage.setItem('legalAllyProvider', provider);
+                document.getElementById('settingsModal').style.display = 'none';
+            } else {
+                alert("Bhai, API key dalna zaroori hai tabhi bot chalega!");
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function addMessage(text, sender) {
+            const container = document.getElementById('chatContainer');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}-message`;
+            msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const apiKey = localStorage.getItem('legalAllyApiKey');
+            const provider = localStorage.getItem('legalAllyProvider');
+
+            if (!apiKey) {
+                openSettings();
+                return;
+            }
+
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Temporary loading message
+            const container = document.getElementById('chatContainer');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message bot-message';
+            loadingDiv.id = 'loadingMsg';
+            loadingDiv.innerText = 'Jawabaat talash kiye ja rahe hain... ⚖️';
+            container.appendChild(loadingDiv);
+            container.scrollTop = container.scrollHeight;
+
+            // API Routing Logic
+            let apiUrl = '';
+            let modelName = '';
+
+            if (provider === 'groq') {
+                apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
+                modelName = 'llama3-70b-8192'; // Best reasoning model on Groq
+            } else if (provider === 'openrouter') {
+                apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+                modelName = 'meta-llama/llama-3-70b-instruct'; 
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: modelName,
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: message }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+
+                document.getElementById('loadingMsg').remove();
+
+                if (!response.ok) {
+                    throw new Error("API Key ka masla hai ya limit khatam ho gayi hai. Settings mein ja kar nayi key dalein.");
+                }
+
+                const data = await response.json();
+                const botReply = data.choices[0].message.content;
+                addMessage(botReply, 'bot');
+
+            } catch (error) {
+                document.getElementById('loadingMsg').remove();
+                addMessage("⚠️ **Error:** " + error.message, 'bot');
+            }
+        }
+    </script>
+</body>
+</html>

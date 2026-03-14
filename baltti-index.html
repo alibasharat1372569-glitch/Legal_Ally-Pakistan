@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal Ally Pakistan - AI Law Explorer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    body { background: #0a0a0a; font-family: 'Inter', sans-serif; }
+    .gold-text { color: #d4af37; font-family: 'Playfair Display', serif; }
+    .scale-float { animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+    .sidebar { scrollbar-width: thin; }
+    .message { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body class="min-h-screen text-white flex">
+
+  <!-- LEFT CHEAT BOARD -->
+  <div class="w-72 bg-zinc-950 border-r border-amber-500/30 flex flex-col h-screen overflow-y-auto sidebar">
+    <div class="p-6 border-b border-amber-500/30">
+      <div class="flex items-center gap-4">
+        <i class="fa-solid fa-scale-balanced text-5xl text-amber-400 scale-float"></i>
+        <div>
+          <h1 class="text-3xl gold-text">Legal Ally Pakistan</h1>
+          <p class="text-amber-400 text-xs tracking-widest">Be the Voice of the Voiceless</p>
+        </div>
+      </div>
+      <p class="text-xs text-zinc-500 mt-4">Basharat Ali (CSE Student, Karachi)</p>
+    </div>
+
+    <!-- Modern Pakistani Vakil Avatar -->
+    <div class="p-6 border-b border-amber-500/30 bg-black/50">
+      <div class="flex items-center gap-4 bg-zinc-900 p-4 rounded-2xl">
+        <div class="w-14 h-14 bg-amber-400/10 rounded-full flex items-center justify-center text-4xl">👨‍⚖️</div>
+        <div>
+          <p class="font-medium text-lg">Advocate Zain Ali</p>
+          <p class="text-xs text-amber-400">Your AI Law Companion</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAWS LIBRARY -->
+    <div class="p-4">
+      <p class="text-amber-400 text-xs uppercase tracking-widest mb-3">Pakistan Laws Library</p>
+      <div id="lawList" class="space-y-1"></div>
+    </div>
+  </div>
+
+  <!-- MAIN CHAT AREA -->
+  <div class="flex-1 flex flex-col">
+    <header class="bg-black border-b border-amber-500/30 px-8 py-5 flex items-center justify-between">
+      <h1 class="text-4xl gold-text">Legal Ally Pakistan</h1>
+      <div class="flex items-center gap-6 text-sm">
+        <span id="currentMode" class="bg-zinc-900 px-5 py-2 rounded-3xl text-amber-400">General Mode</span>
+        <button onclick="exportChat()" class="flex items-center gap-2 hover:text-amber-400"><i class="fa-solid fa-download"></i> Save Chat</button>
+        <button onclick="clearChat()" class="flex items-center gap-2 hover:text-amber-400"><i class="fa-solid fa-trash"></i> Clear Chat</button>
+      </div>
+    </header>
+
+    <div id="chat" class="flex-1 overflow-y-auto p-8 space-y-8"></div>
+
+    <!-- INPUT BAR -->
+    <div class="bg-black border-t border-amber-500/30 p-6">
+      <div class="max-w-4xl mx-auto flex gap-3 bg-zinc-900 rounded-3xl p-3">
+        <button onclick="startVoice()" class="px-6 text-amber-400 hover:text-amber-300"><i class="fa-solid fa-microphone text-2xl"></i></button>
+        
+        <input id="messageInput" type="text" placeholder="Ask anything about Constitution, PPC, Family Law..." 
+          class="flex-1 bg-transparent px-6 py-4 outline-none text-base placeholder-zinc-400">
+
+        <input id="apiKey" type="password" placeholder="Groq/Gemini Free Key" class="w-48 bg-transparent px-4 outline-none text-sm">
+
+        <select id="provider" class="bg-zinc-800 text-amber-400 px-6 py-4 rounded-2xl outline-none">
+          <option value="groq">Groq (Fastest)</option>
+          <option value="gemini">Gemini (Smartest)</option>
+        </select>
+
+        <button onclick="sendMessage()" class="bg-amber-400 hover:bg-amber-500 text-black px-10 rounded-2xl font-bold flex items-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Send
+        </button>
+      </div>
+      <div class="text-center mt-3 text-[10px] text-zinc-600">100% Free • Browser Only • No Money Needed</div>
+    </div>
+  </div>
+
+  <!-- RIGHT SUMMARY PANEL -->
+  <div id="summaryPanel" class="w-80 bg-zinc-950 border-l border-amber-500/30 p-6 hidden flex-col">
+    <h3 id="summaryTitle" class="text-2xl gold-text mb-6"></h3>
+    <div id="summaryContent" class="text-sm leading-relaxed text-zinc-300"></div>
+    <button onclick="chatAboutThis()" class="mt-auto bg-amber-400 text-black py-4 rounded-2xl font-medium">Ask AI About This Law</button>
+  </div>
+
+  <script>
+    // === ENGLISH ONLY + EXTREME CRITICAL THINKING PROMPT ===
+    const SYSTEM_PROMPT = `You are Legal Ally Pakistan — Pakistan's most powerful AI Law Expert with extreme critical thinking.
+
+You MUST reply ONLY in clear, professional English (no Urdu script at all, except when quoting exact law articles).
+
+Always use this EXACT 6-section format:
+
+**Simple Explanation:**  
+[Super easy English for students and common citizens]
+
+**Detailed Legal Provisions:**  
+[Exact sections/articles with precise references]
+
+**Constitutional References:**  
+[Specific Article numbers from 1973 Constitution with quotes]
+
+**Islamic Shariat Perspective:**  
+[Analysis under Article 2 and 227, Quran & Sunnah compliance]
+
+**Examples & Precedents:**  
+[Real Pakistani cases or realistic hypothetical examples with critical analysis]
+
+**Important Advice & Disclaimer:**  
+[Practical next steps + bold disclaimer: This is not legal advice. Always consult a qualified lawyer in Karachi/Pakistan. This is for educational and awareness purposes only.]
+
+CRITICAL THINKING RULES (apply in every answer):
+- Analyze from multiple angles: constitutional validity, Shariat compliance, real Karachi/Pakistan ground reality, rural Jirga/Panchayat customs where applicable.
+- Point out any ambiguities in the law and different possible interpretations.
+- Think like a top Pakistani lawyer + law student mentor.
+- Consider latest amendments up to 2026.
+- Be honest, practical and zero hallucination.
+
+You are built for Pakistani users — be the voice of the voiceless!`;
+
+    // Laws Library (English + Roman Urdu names)
+    const laws = [
+      {id:"const", name:"Constitution of Pakistan 1973", summary:"Preamble, Fundamental Rights (Articles 8-28), Principles of Policy, Article 2 (Islam), Article 227 (Quran & Sunnah). Full 280+ articles with critical analysis."},
+      {id:"ppc", name:"Pakistan Penal Code 1860", summary:"Qisas & Diyat, offences against person/property/state. 500+ sections with latest amendments."},
+      {id:"crpc", name:"CrPC 1898", summary:"FIR, investigation, bail, trial, appeals — complete procedure."},
+      {id:"family", name:"Family Law", summary:"Muslim Family Laws, divorce, maintenance, custody, nikah."},
+      {id:"peca", name:"PECA Cyber Law 2016", summary:"Cyber crimes, social media offences, hacking, defamation."},
+      {id:"property", name:"Property & Land Laws", summary:"Transfer of Property Act, Land Revenue, Stamp Act — Karachi & rural focus."},
+      {id:"tax", name:"Income Tax & Banking Laws", summary:"Income Tax Ordinance 2001, Banking Companies Ordinance."},
+      {id:"shariat", name:"Islamic Shariat in Pakistan", summary:"Article 2 & 227 supremacy, Hudood, Zakat, Riba-free banking."}
+    ];
+
+    let currentLawContext = "";
+    let messages = [];
+    let isLoading = false;
+    const chatDiv = document.getElementById('chat');
+
+    function renderLaws() {
+      const list = document.getElementById('lawList');
+      laws.forEach(law => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left px-6 py-4 hover:bg-amber-500/10 rounded-2xl transition-all flex justify-between items-center text-sm";
+        btn.innerHTML = `${law.name} <i class="fa-solid fa-chevron-right text-xs"></i>`;
+        btn.onclick = () => showLawSummary(law);
+        list.appendChild(btn);
+      });
+    }
+
+    function showLawSummary(law) {
+      currentLawContext = law.name;
+      document.getElementById('currentMode').textContent = law.name;
+      document.getElementById('summaryTitle').textContent = law.name;
+      document.getElementById('summaryContent').innerHTML = law.summary;
+      document.getElementById('summaryPanel').classList.remove('hidden');
+    }
+
+    function chatAboutThis() {
+      document.getElementById('messageInput').value = `Explain ${currentLawContext} in full detail with critical analysis`;
+      sendMessage();
+    }
+
+    function addMessage(role, content) {
+      const div = document.createElement('div');
+      div.className = `flex message ${role==='user' ? 'justify-end' : 'justify-start'}`;
+      div.innerHTML = role==='user' 
+        ? `<div class="max-w-3xl bg-amber-500/10 p-6 rounded-3xl"><p class="text-base">${content}</p></div>`
+        : `<div class="max-w-3xl bg-zinc-900 p-6 rounded-3xl"><div class="prose prose-invert text-base leading-relaxed">${content.replace(/\n/g,'<br>')}</div></div>`;
+      chatDiv.appendChild(div);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('messageInput').value.trim();
+      const key = document.getElementById('apiKey').value.trim();
+      const provider = document.getElementById('provider').value;
+
+      if (!input || !key) return alert("Message aur Free API Key dono daalo!");
+
+      addMessage('user', input);
+      messages.push({role:"user", content: input + (currentLawContext ? ` (Context: ${currentLawContext})` : "")});
+
+      document.getElementById('messageInput').value = "";
+      isLoading = true;
+      const sendBtn = document.querySelector('button[onclick="sendMessage()"]');
+      sendBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Thinking...`;
+
+      const assistantDiv = document.createElement('div');
+      assistantDiv.className = "flex justify-start message";
+      assistantDiv.innerHTML = `<div class="max-w-3xl bg-zinc-900 p-6 rounded-3xl"><div id="responseText" class="prose prose-invert text-base leading-relaxed"></div></div>`;
+      chatDiv.appendChild(assistantDiv);
+      const responseText = assistantDiv.querySelector('#responseText');
+
+      try {
+        let fullReply = "";
+        if (provider === "groq") {
+          const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              model: "llama-3.3-70b-versatile", 
+              messages: [{role:"system", content: SYSTEM_PROMPT}, ...messages], 
+              stream: true 
+            })
+          });
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          while (true) {
+            const {done, value} = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            const lines = chunk.split("\n");
+            for (let line of lines) {
+              if (line.startsWith("data: ") && line !== "data: [DONE]") {
+                try {
+                  const json = JSON.parse(line.slice(6));
+                  const delta = json.choices[0]?.delta?.content || "";
+                  fullReply += delta;
+                  responseText.innerHTML = fullReply.replace(/\n/g, '<br>');
+                  chatDiv.scrollTop = chatDiv.scrollHeight;
+                } catch(e){}
+              }
+            }
+          }
+        } else {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\nUser: " + input }] }] })
+          });
+          const data = await res.json();
+          fullReply = data.candidates[0].content.parts[0].text;
+          responseText.innerHTML = fullReply.replace(/\n/g, '<br>');
+        }
+        messages.push({role: "assistant", content: fullReply});
+      } catch (err) {
+        responseText.innerHTML = `<span class="text-red-400">Error: Please check your API key or try a fresh one.</span>`;
+      } finally {
+        isLoading = false;
+        sendBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send`;
+        localStorage.setItem('legalChatHistory', JSON.stringify(messages));
+      }
+    }
+
+    function startVoice() {
+      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) return alert("Voice not supported in this browser");
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.onresult = (e) => {
+        document.getElementById('messageInput').value = e.results[0][0].transcript;
+        sendMessage();
+      };
+      recognition.start();
+    }
+
+    function exportChat() {
+      let text = "Legal Ally Pakistan Chat Export\n\n";
+      messages.forEach(m => text += `${m.role.toUpperCase()}: ${m.content}\n\n`);
+      const blob = new Blob([text], {type: 'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Legal-Ally-Chat-${new Date().toISOString().slice(0,10)}.txt`;
+      a.click();
+    }
+
+    function clearChat() {
+      if (confirm("Clear entire chat?")) {
+        chatDiv.innerHTML = '';
+        messages = [];
+      }
+    }
+
+    window.onload = () => {
+      renderLaws();
+      const savedKey = localStorage.getItem('freeLawKey');
+      if (savedKey) document.getElementById('apiKey').value = savedKey;
+      const history = localStorage.getItem('legalChatHistory');
+      if (history) messages = JSON.parse(history);
+      console.log("%c✅ Legal Ally Pakistan - FULL ENGLISH + Extreme Critical Thinking Version Ready!", "color:#d4af37; font-size:16px");
+    };
+  </script>
+</body>
+</html>

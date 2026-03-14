@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Legal Ally Pakistan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#0b0b0b;
+color:white;
+}
+
+header{
+background:#111;
+padding:20px;
+text-align:center;
+font-size:28px;
+color:gold;
+}
+
+.container{
+display:flex;
+height:90vh;
+}
+
+.sidebar{
+width:260px;
+background:#141414;
+padding:20px;
+overflow:auto;
+border-right:1px solid #333;
+}
+
+.sidebar h3{
+color:gold;
+}
+
+.sidebar button{
+width:100%;
+margin:6px 0;
+padding:10px;
+background:#222;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+.sidebar button:hover{
+background:gold;
+color:black;
+}
+
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.chatbox{
+flex:1;
+overflow:auto;
+padding:20px;
+}
+
+.msg{
+margin:10px 0;
+padding:10px;
+border-radius:8px;
+max-width:70%;
+}
+
+.user{
+background:#2a2a2a;
+margin-left:auto;
+}
+
+.bot{
+background:#1a1a1a;
+border:1px solid gold;
+}
+
+.input-area{
+display:flex;
+padding:15px;
+background:#111;
+}
+
+input,textarea{
+flex:1;
+padding:10px;
+border:none;
+outline:none;
+}
+
+button.send{
+padding:10px 20px;
+background:gold;
+border:none;
+cursor:pointer;
+}
+
+.settings{
+padding:15px;
+background:#111;
+border-bottom:1px solid #333;
+}
+
+.settings input{
+width:100%;
+margin-top:5px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+⚖ Legal Ally Pakistan
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h3>Pakistan Laws</h3>
+
+<button onclick="insertPrompt('Explain Constitution of Pakistan in simple terms')">Constitution</button>
+
+<button onclick="insertPrompt('Explain Pakistan Penal Code simply')">Criminal Law</button>
+
+<button onclick="insertPrompt('Explain family law in Pakistan')">Family Law</button>
+
+<button onclick="insertPrompt('Explain property law in Pakistan')">Property Law</button>
+
+<button onclick="insertPrompt('Explain cyber crime law in Pakistan')">Cyber Crime</button>
+
+<button onclick="insertPrompt('Explain labour law in Pakistan')">Labour Law</button>
+
+<button onclick="insertPrompt('Explain traffic laws in Pakistan')">Traffic Law</button>
+
+<h3>Law Student Tools</h3>
+
+<button onclick="insertPrompt('Create MCQs for Pakistan law students')">MCQ Quiz</button>
+
+<button onclick="insertPrompt('Explain legal terms for beginners')">Legal Terms</button>
+
+<button onclick="insertPrompt('Explain how FIR works in Pakistan')">FIR Guide</button>
+
+<h3>Documents</h3>
+
+<button onclick="insertPrompt('Generate rent agreement in Pakistan')">Rent Agreement</button>
+
+<button onclick="insertPrompt('Generate affidavit format Pakistan')">Affidavit</button>
+
+<button onclick="insertPrompt('Generate legal notice template Pakistan')">Legal Notice</button>
+
+</div>
+
+<div class="main">
+
+<div class="settings">
+
+Groq API Key
+
+<input id="apikey" placeholder="Paste your Groq API key here">
+
+</div>
+
+<div class="chatbox" id="chat"></div>
+
+<div class="input-area">
+
+<textarea id="msg" placeholder="Ask any legal question about Pakistan law..."></textarea>
+
+<button class="send" onclick="send()">Send</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function insertPrompt(text){
+document.getElementById("msg").value=text
+}
+
+function addMessage(text,cls){
+
+let chat=document.getElementById("chat")
+
+let div=document.createElement("div")
+
+div.className="msg "+cls
+
+div.innerText=text
+
+chat.appendChild(div)
+
+chat.scrollTop=chat.scrollHeight
+
+}
+
+async function send(){
+
+let message=document.getElementById("msg").value
+
+let key=document.getElementById("apikey").value
+
+if(!key){
+alert("Enter API key first")
+return
+}
+
+addMessage(message,"user")
+
+document.getElementById("msg").value=""
+
+let response=await fetch(
+"https://api.groq.com/openai/v1/chat/completions",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+key
+},
+body:JSON.stringify({
+model:"llama3-70b-8192",
+messages:[
+{
+role:"system",
+content:"You are Legal Ally Pakistan AI. Explain Pakistan laws clearly in Urdu and English for law students and common people."
+},
+{
+role:"user",
+content:message
+}
+]
+})
+}
+)
+
+let data=await response.json()
+
+let reply=data.choices[0].message.content
+
+addMessage(reply,"bot")
+
+}
+
+</script>
+
+</body>
+
+</html>

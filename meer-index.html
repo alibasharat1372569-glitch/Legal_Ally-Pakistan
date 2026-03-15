@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegAid | Voice of the Voiceless</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --pak-green: #01411C; --gold: #C5A021; }
+        .bg-pak-green { background-color: var(--pak-green); }
+        .text-gold { color: var(--gold); }
+        .border-gold { border-color: var(--gold); }
+        
+        /* Smooth Scrolling */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--pak-green); border-radius: 10px; }
+        #chatArea { scroll-behavior: smooth; }
+
+        /* Comparison Table Fix */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.8rem; }
+        th { background-color: var(--pak-green); color: var(--gold); }
+    </style>
+</head>
+<body class="bg-gray-100 h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-pak-green p-4 flex justify-between items-center shadow-2xl z-50">
+        <div class="flex items-center gap-4">
+            <div class="text-3xl">⚖️⭐</div>
+            <div>
+                <h1 class="text-white text-2xl font-bold tracking-tighter">LegAid</h1>
+                <p class="text-xs text-gold italic font-medium">Be the voice of the voiceless</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div class="hidden md:flex flex-col items-end">
+                <a href="https://console.groq.com/keys" target="_blank" class="text-[10px] text-gold underline hover:text-white mb-1">Get Free Groq API Key Here</a>
+                <input type="password" id="groqKey" placeholder="Paste Groq API Key" class="bg-white/10 text-white border border-gold/50 px-4 py-2 rounded-full text-sm outline-none focus:bg-white/20 w-64">
+            </div>
+            <div class="bg-white/10 px-3 py-1 rounded-md text-[10px] text-white">
+                Made By: <span class="text-gold font-bold">Bisharat Ali</span><br>NED University Karachi
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="w-72 bg-white border-r border-gray-200 flex flex-col custom-scrollbar overflow-y-auto">
+            <div class="p-4 font-bold text-pak-green border-b bg-gray-50 flex items-center gap-2">
+                <i class="fa-solid fa-gavel"></i> LAW DIRECTORY
+            </div>
+            
+            <nav class="flex-1 p-2 space-y-1">
+                <button onclick="setMode('Pakistan Penal Code (PPC)')" class="w-full text-left p-3 hover:bg-green-50 rounded-lg flex items-center gap-3 text-sm text-gray-700">
+                    <i class="fa-solid fa-scale-unbalanced text-pak-green"></i> Pakistan Penal Code
+                </button>
+                <button onclick="setMode('Constitution of Pakistan')" class="w-full text-left p-3 hover:bg-green-50 rounded-lg flex items-center gap-3 text-sm text-gray-700">
+                    <i class="fa-solid fa-building-columns text-pak-green"></i> Constitution (1973)
+                </button>
+                <button onclick="setMode('Family and Nikah Law')" class="w-full text-left p-3 hover:bg-green-50 rounded-lg flex items-center gap-3 text-sm text-gray-700">
+                    <i class="fa-solid fa-users-rectangle text-pak-green"></i> Family & Nikah Law
+                </button>
+                <button onclick="setMode('Criminal Procedure (CrPC)')" class="w-full text-left p-3 hover:bg-green-50 rounded-lg flex items-center gap-3 text-sm text-gray-700">
+                    <i class="fa-solid fa-shield-halved text-pak-green"></i> Criminal Procedure
+                </button>
+                <button onclick="setMode('Cyber Law (PECA)')" class="w-full text-left p-3 hover:bg-green-50 rounded-lg flex items-center gap-3 text-sm text-gray-700">
+                    <i class="fa-solid fa-laptop-code text-pak-green"></i> PECA & Cyber Laws
+                </button>
+                <button onclick="setMode('Property Law')" class="w-full text-left p-3 hover:bg-green-50 rounded-lg flex items-center gap-3 text-sm text-gray-700">
+                    <i class="fa-solid fa-house-chimney text-pak-green"></i> Property & Land Law
+                </button>
+                <div class="h-[1px] bg-gray-200 my-4"></div>
+                <button onclick="showTool('docs')" class="w-full text-left p-3 bg-pak-green text-white rounded-lg flex items-center gap-3 shadow-lg">
+                    <i class="fa-solid fa-file-invoice text-gold"></i> Document Generator
+                </button>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-white">
+            <div id="chatArea" class="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar">
+                <div class="flex gap-3">
+                    <div class="w-10 h-10 bg-pak-green rounded-full flex items-center justify-center text-gold shadow-md">👩‍⚖️</div>
+                    <div class="bg-gray-100 p-4 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm">
+                        <p class="text-sm font-bold text-pak-green mb-1">Assalam-o-Alaikum! Main Miss Advocate hoon.</p>
+                        <p class="text-sm text-gray-700">Main Pakistan ke qanoon ko asaan alfaz mein samjhane ke liye <span class="font-bold">Bisharat Ali</span> ne banayi hoon. Aap mujhse kisi bhi jurm ki saza, apne huqooq, ya adalat ke tariqa-kar ke bare mein pooch sakte hain.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t bg-gray-50">
+                <div class="flex gap-2 max-w-4xl mx-auto">
+                    <input type="text" id="userInput" onkeypress="handleEnter(event)" placeholder="Apna sawal likhein (e.g. PPC Section 302 kya hai?)..." class="flex-1 p-4 border border-gray-300 rounded-xl outline-none focus:border-pak-green shadow-sm">
+                    <button onclick="askGroq()" class="bg-pak-green text-gold px-6 py-4 rounded-xl font-bold hover:brightness-110 flex items-center gap-2 transition-all">
+                        <span>SEND</span> <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <aside class="w-80 bg-pak-green p-6 flex flex-col items-center border-l border-gold/30">
+            <div class="w-32 h-32 bg-white rounded-full border-4 border-gold mb-4 flex items-center justify-center text-5xl overflow-hidden shadow-2xl">👩‍⚖️</div>
+            <h3 class="text-white font-bold text-xl mb-1">Miss Advocate</h3>
+            <span class="text-gold text-[10px] px-3 py-1 border border-gold rounded-full mb-6 uppercase tracking-widest font-bold">Expert Assistant</span>
+            
+            <div class="w-full space-y-3">
+                <div onclick="showTool('quick')" class="bg-white/10 p-3 rounded-lg border border-white/5 cursor-pointer hover:bg-white/20 transition-all">
+                    <h4 class="text-gold text-sm font-bold"><i class="fa-solid fa-bolt"></i> Quick Consult</h4>
+                    <p class="text-white text-[10px]">Direct friendly advice (Bhai/Beta mode)</p>
+                </div>
+                <div onclick="showTool('bail')" class="bg-white/10 p-3 rounded-lg border border-white/5 cursor-pointer hover:bg-white/20 transition-all">
+                    <h4 class="text-gold text-sm font-bold"><i class="fa-solid fa-scale-balanced"></i> Bail Estimator</h4>
+                    <p class="text-white text-[10px]">Probable bail calculation logic</p>
+                </div>
+                <div onclick="showTool('faq')" class="bg-white/10 p-3 rounded-lg border border-white/5 cursor-pointer hover:bg-white/20 transition-all">
+                    <h4 class="text-gold text-sm font-bold"><i class="fa-solid fa-circle-question"></i> FAQ Library</h4>
+                    <p class="text-white text-[10px]">Common legal questions answered</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-xl overflow-hidden shadow-2xl">
+            <div class="bg-pak-green p-4 flex justify-between items-center text-white">
+                <h2 id="modalTitle" class="text-gold font-bold">Tool</h2>
+                <button onclick="closeModal()" class="text-2xl hover:text-gold">&times;</button>
+            </div>
+            <div id="modalBody" class="p-6 text-sm text-gray-700 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = "General Pakistani Law";
+
+        function handleEnter(e) { if(e.key === 'Enter') askGroq(); }
+
+        function setMode(mode) {
+            currentMode = mode;
+            appendMessage("ai", `Zabardast! Main ne **${mode}** research mode on kar liya hai.`);
+        }
+
+        function showTool(type) {
+            const m = document.getElementById('modal');
+            const t = document.getElementById('modalTitle');
+            const b = document.getElementById('modalBody');
+            m.classList.remove('hidden');
+
+            if(type === 'quick') {
+                t.innerText = "Quick Consult";
+                b.innerHTML = "Is mode mein Miss Adv aap se dostana andaz mein baat karegi. Aap bas chat box mein apna masla likhein.";
+            } else if(type === 'bail') {
+                t.innerText = "Bail Estimator";
+                b.innerHTML = "Bailable offences mein zamanat haq hai. Non-bailable mein judge ka ikhtiyar hota hai. Mujhse apna jurm (Section) chat mein poonchein.";
+            } else if(type === 'faq') {
+                t.innerText = "FAQ Library";
+                b.innerHTML = "• Police 24 ghante se zyada lockup mein nahi rakh sakti.<br>• FIR darj karwana apka haq hai.<br>• Khula aurat ka haq hai.";
+            } else {
+                t.innerText = "Document Generator";
+                b.innerHTML = "AI se kahein ke aapko FIR, Affidavit ya Rent Agreement ka draft bana kar de.";
+            }
+        }
+
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+        function appendMessage(role, text) {
+            const chat = document.getElementById('chatArea');
+            const div = document.createElement('div');
+            div.className = role === 'user' ? 'flex justify-end mb-4' : 'flex gap-3 mb-4';
+            
+            let formatted = text.replace(/\n/g, '<br>');
+            if (text.includes('|')) {
+                const lines = text.split('\n').filter(l => l.includes('|'));
+                let table = '<table>';
+                lines.forEach((l, i) => {
+                    const cells = l.split('|').filter(c => c.trim() !== '');
+                    const tag = i === 0 ? 'th' : 'td';
+                    table += '<tr>' + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('') + '</tr>';
+                });
+                table += '</table>';
+                formatted = table;
+            }
+
+            div.innerHTML = role === 'user' 
+                ? `<div class="bg-pak-green text-white p-4 rounded-2xl rounded-tr-none shadow-md max-w-[80%] text-sm">${text}</div>`
+                : `<div class="w-10 h-10 bg-pak-green rounded-full flex items-center justify-center text-gold shadow-md">👩‍⚖️</div>
+                   <div class="bg-gray-100 p-4 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm text-sm">${formatted}</div>`;
+            
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function askGroq() {
+            const input = document.getElementById('userInput');
+            const key = document.getElementById('groqKey').value.trim();
+            const text = input.value.trim();
+
+            if(!text || !key) { if(!key) alert("Please enter API Key!"); return; }
+
+            appendMessage('user', text);
+            input.value = '';
+
+            const load = document.createElement('div');
+            load.className = 'flex gap-3 mb-4 animate-pulse';
+            load.innerHTML = `<div class="w-10 h-10 bg-gray-200 rounded-full"></div><div class="bg-gray-100 p-4 rounded-xl w-32">...</div>`;
+            document.getElementById('chatArea').appendChild(load);
+
+            try {
+                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: `Aapka naam LegAid AI hai. Aapko Bisharat Ali (NED University) ne banaya hai. Aap Pakistan ke expert Lawyer hain. STRICT: NO HINDI WORDS like 'Ulanghan' or 'Adhikar'. Use Urdu terms. Mode: ${currentMode}. If comparison, use tables.` },
+                            { role: "user", content: text }
+                        ]
+                    })
+                });
+                const data = await res.json();
+                load.remove();
+                appendMessage('ai', data.choices[0].message.content);
+            } catch (e) {
+                load.remove();
+                appendMessage('ai', "Error connecting to Groq.");
+            }
+        }
+    </script>
+</body>
+</html>
